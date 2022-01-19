@@ -3,7 +3,7 @@
     public class LuhnCheckService : ILuhnCheckService
 
     {
-        public bool LuhnCheck(string cardNumber)
+        public bool Check(string cardNumber)
         {
             return LuhnCheck(cardNumber.Select(c => c - '0').ToArray());
         }
