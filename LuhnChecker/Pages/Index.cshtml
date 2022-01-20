@@ -1,67 +1,67 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+	ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <nav class="navbar navbar-expand-sm">
-        <div class="d-sm-inline-flex flex-sm mt-2">
-            <ul class="navbar-nav mt-2">
-                <li>
-                </li>
-                <li class="ml-2">
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <br />
-    <div class="container">
-        <div class="row">
-            <div class="col">
-            </div>
-            <div class="col">
-                <form id="luhn" method="post" asp-page-handler="CheckLuhn" autocomplete="off">
-                    <div asp-validation-summary="All">
-                        <span>Errors:</span>
-                    </div>
-                    <input type="hidden" name="IsValid" value="@ViewData.ModelState.IsValid.ToString()" />
-                    <div class="container-fluid">
-                        <div class="row">
-                            <label asp-for="CardNums" class="control-label">Card No's:</label>
-                            <textarea class="form-control" rows="5" id="cardNums" asp-for="CardNums"></textarea>
-                        </div>
-                    </div>
-                    <hr />
-                    <div class="row mt-3">
-                        <input type="submit" value="Submit" class="btn btn-primary" />
-                    </div>
-                </form>
-            </div>
-            <div class="col">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-            </div>
-            <div class="col">
-
-            </div>
-            <div class="col">
-            </div>
-        </div>
-    </div>
+	<div class="container mt-4">
+		<div class="row">
+			<div class="col-4 mx-auto">
+				<form id="luhnForm" method="post" asp-page-handler="CheckLuhn" autocomplete="off">
+					<div id="valSummary" asp-validation-summary="All">
+						<span>Errors:</span>
+					</div>
+					<input type="hidden" id="IsValid" name="IsValid" value="@ViewData.ModelState.IsValid.ToString()" />
+					<div class="container-fluid">
+						<div class="form-group">
+							<label asp-for="CardNums" class="control-label float-start mb-1">Enter card No's, one per line:</label>
+							<textarea id="inpCards" class="form-control" rows="5" id="cardNums" asp-for="CardNums" autofocus></textarea>
+						</div>
+					</div>
+					<hr />
+					<div class="mt-3 d-grid gap-2 d-md-block">
+						<input id="clr" type="button" value="Clear" class="btn btn-secondary" />
+						<input type="submit" value="Submit" class="btn btn-primary" />
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4 mx-auto mt-3">
+				@if (Model != null && (Model.Rslt != null && Model.Rslt.Count() > 0))
+				{
+					<div id="output" class="float-start">
+						<ul>
+							@foreach (var item in Model.Rslt)
+							{
+								if (item != null && !string.IsNullOrWhiteSpace(item))
+								{
+									<li style="text-align: left;"><span>@item</span></li>
+								}
+							}
+						</ul>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
 </div>
 
 @section Scripts {
-    @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	@{
+	await Html.RenderPartialAsync("_ValidationScriptsPartial");
 }
 
 <script>
-    $(document).ready(function () {
-        $('#ADServerId').attr("disabled", $('#switchAD').is(':unchecked'));
-    });
+	$(function () {
+		$("#clr").click(function () {
+			document.getElementById('luhnForm').reset();
+			$("#valSummary").hide();
+			$("#IsValid").val(true);
+			$("#output").remove();
+			$("#inpCards").val(null).focus();
+		});
+	})
 </script>
 }

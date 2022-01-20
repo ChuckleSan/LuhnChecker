@@ -25,6 +25,8 @@ namespace LuhnChecker.Pages
         [BindProperty]
         public string CardNums { get; set; }
 
+        public string[] Rslt { get; set; }
+
         public void OnGet()
         {
 
@@ -35,7 +37,6 @@ namespace LuhnChecker.Pages
             if (CardNums == null)
             {
                 ModelState.AddModelError(string.Empty, "You need to enter at least one card number");
-                return Page();
             }
             else
             {
@@ -45,16 +46,18 @@ namespace LuhnChecker.Pages
 
                 foreach (string card in cards)
                 {
-                    if (card != null) rsp.AppendLine($"{card} is {(_luhnCheck.Check(card) ? "valid" : "invalid")}");
+                    if (card != null) rsp.AppendLine($"{card} is {(_luhnCheck.Check(card) ? "valid" : "NOT valid")}");
                 }
-                return Content(rsp.ToString());
-            }
 
+                Rslt = rsp.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            }
+            return Page();
+
+            // Tests
             //49927398716       valid
             //49927398717       not valid
             //1234567812345678  not valid
             //1234567812345670  valid
-
         }
     }
 }
