@@ -1,51 +1,71 @@
-﻿@page
+﻿@page "{handler?}"
 @model IndexModel
 @{
-	ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-	<div class="container mt-4">
-		<div class="row">
-			<div class="col-4 mx-auto">
-				<form id="luhnForm" method="post" asp-page-handler="CheckLuhn" autocomplete="off">
-					<div id="valSummary" asp-validation-summary="All">
-						<span>Errors:</span>
-					</div>
-					<input type="hidden" id="IsValid" name="IsValid" value="@ViewData.ModelState.IsValid.ToString()" />
-					<div class="container-fluid">
-						<div class="form-group">
-							<label asp-for="CardNums" class="control-label float-start mb-1">Enter card No's, one per line:</label>
-							<textarea id="inpCards" class="form-control" rows="5" id="cardNums" asp-for="CardNums" autofocus></textarea>
-						</div>
-					</div>
-					<hr />
-					<div class="mt-3 d-grid gap-2 d-md-block">
-						<input id="clr" type="button" value="Clear" class="btn btn-secondary" />
-						<input type="submit" value="Submit" class="btn btn-primary" />
-					</div>
-				</form>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-4 mx-auto mt-3">
-				@if (Model != null && (Model.Rslt != null && Model.Rslt.Count() > 0))
-				{
-					<div id="output" class="float-start">
-						<ul>
-							@foreach (var item in Model.Rslt)
-							{
-								if (item != null && !string.IsNullOrWhiteSpace(item))
-								{
-									<li style="text-align: left;"><span>@item</span></li>
-								}
-							}
-						</ul>
-					</div>
-				}
-			</div>
-		</div>
-	</div>
+    <div class="container mt-4">
+        <div cl="row">
+            <div class="col-4 mx-auto">
+                <form id="digitForm" method="get" asp-page-handler="GenLuhn" autocomplete="off">
+                    <div class="container-fluid">
+                        <div class="form-group">
+                            <label asp-for="LuhnlessNum" class="control-label float-start mb-1">Enter a number and click "Generate":</label>
+                            <div class="input-group">
+                                <input asp-for="LuhnlessNum" type="text" class="form-control numeric-only" placeholder="Number" autofocus />
+                                <button class="btn btn-primary" type="submit">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="mx-auto my-3">
+                --- or ---
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4 mx-auto">
+                <form id="luhnForm" method="post" asp-page-handler="CheckLuhn" autocomplete="off">
+                    <div id="valSummary" asp-validation-summary="All">
+                        <span>Errors:</span>
+                    </div>
+                    <input type="hidden" id="IsValid" name="IsValid" value="@ViewData.ModelState.IsValid.ToString()" />
+                    <div class="container-fluid">
+                        <div class="form-group">
+                            <label asp-for="CardNums" class="control-label float-start mb-1">Enter card No's, one per line:</label>
+                            <textarea id="inpCards" class="form-control" rows="5" id="cardNums" asp-for="CardNums"></textarea>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="mt-3 d-grid gap-2 d-md-block">
+                        <input id="clr" type="button" value="Clear" class="btn btn-secondary" />
+                        <input type="submit" value="Submit" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4 mx-auto mt-3">
+                @if (Model != null && (Model.Rslt != null && Model.Rslt.Count() > 0))
+                {
+                    <div id="output" class="float-start">
+                        <ul>
+                            @foreach (var item in Model.Rslt)
+                            {
+                                if (item != null && !string.IsNullOrWhiteSpace(item))
+                                {
+                                    <li style="text-align: left;"><span>@item</span></li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -54,14 +74,38 @@
 }
 
 <script>
-	$(function () {
-		$("#clr").click(function () {
-			document.getElementById('luhnForm').reset();
-			$("#valSummary").hide();
-			$("#IsValid").val(true);
-			$("#output").remove();
-			$("#inpCards").val(null).focus();
-		});
-	})
+    $(function () {
+        //Allow users to enter numbers only
+        $(".numeric-only").bind('keypress', function (e) {
+            if (e.keyCode == '9' || e.keyCode == '16') {
+                return;
+            }
+            var code;
+            if (e.keyCode) code = e.keyCode;
+            else if (e.which) code = e.which;
+            if (e.which == 46)
+                return false;
+            if (code == 8 || code == 46)
+                return true;
+            if (code < 48 || code > 57)
+                return false;
+        });
+
+        $(".numeric-only").bind('mouseenter', function (e) {
+            var val = $(this).val();
+            if (val != '0') {
+                val = val.replace(/[^0-9]+/g, "")
+                $(this).val(val);
+            }
+        });
+
+        $("#clr").click(function () {
+            document.getElementById('luhnForm').reset();
+            $("#valSummary").hide();
+            $("#IsValid").val(true);
+            $("#output").remove();
+            $("#inpCards").val(null).focus();
+        });
+    })
 </script>
 }

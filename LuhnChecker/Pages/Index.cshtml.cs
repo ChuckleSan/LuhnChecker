@@ -25,11 +25,23 @@ namespace LuhnChecker.Pages
         [BindProperty]
         public string CardNums { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string LuhnlessNum { get; set; }
+
         public string[] Rslt { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGetGenLuhn()
         {
-
+            if (LuhnlessNum == null)
+            {
+                ModelState.AddModelError(string.Empty, "Enter a number first!");
+            }
+            else
+            {
+                LuhnlessNum += LuhnlessNum.CheckDigit();
+                ModelState.Remove("LuhnlessNum");
+            }
+            return Page();
         }
 
         public IActionResult OnPostCheckLuhn()
